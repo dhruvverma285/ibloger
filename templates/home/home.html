@@ -1,0 +1,40 @@
+{% extends 'home/base.html'%}
+{%block homeactive%} active {%endblock%}
+{% block title%} Home {% endblock %}
+{% block body%} <div class="jumbotron">
+  <h1 class="display-4">Welcome to Trash of Clan Blog</h1>
+  <p class="lead">Kahate The Tujhako Log Maseeha Magar Yahaan, 
+    Ek Shakhs Mar Gaya Tujhe Dekhane Ke Baad.</p>
+  <hr class="my-4">
+  <p>Vo Ek Shakhs Samajhata Tha Mujhe, 
+    Phir Vo Bhi Samajhadaar Ho Gaya. </p>
+  <a class="btn btn-primary btn-lg" href="/blog" role="button">Go to Blog</a>
+</div>
+<main class="flex-shrink-0">
+  <div class="container">
+    <h1 class="mt-5">Latest Post</h1>
+  </div>
+</main>
+
+<div class="container my-3">
+  <!-- Example row of columns -->
+  <div class="row">
+    {% for i in allpost%}
+    <div class="col-md-4">
+      <h3>{{i.title|slice:':50'}}</h3>
+      <p>{{i.content|slice:':150'}}</p>
+      <p><a class="btn btn-secondary" href="/blog/{{i.pno}}" role="button">View details »</a></p>
+    </div>
+    {% if forloop.counter|divisibleby:3 %}
+  </div>
+  {%endif%}
+
+
+  {%endfor%}
+
+
+</div>
+
+<hr>
+
+</div> {%endblock%}

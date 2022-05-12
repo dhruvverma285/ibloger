@@ -1,0 +1,95 @@
+{% extends 'blog/base.html'%}
+{% block title%} Blog {% endblock %}
+{%block blogactive %} active {%endblock%}
+{% block body %}
+{%load bro%}
+{% load humanize %}
+<div class="container">
+    <div class="row g-5">
+        <div class="col-md-8">
+
+            <article class="blog-post">
+                <h2 class="blog-post-title my-2">{{post.title}}</h2>
+                <p class="blog-post-meta">{{post.timestamp}} by {{post.author}} <span>({{post.views}} Views)</span></p>
+
+                <p>{{post.content}}</p>
+
+
+        </div>
+
+
+
+    </div>
+    <nav class="blog-pagination" aria-label="Pagination">
+        <a class="btn btn-outline-primary" href="/blog/{{old}}">Older</a>
+        <a class="btn btn-outline-secondary " href="/blog/{{new}}">Newer</a>
+    </nav>
+
+    <div class="container my-2">
+
+
+        <h2>Comment ({{count}})</h2>
+        {% if not user.is_authenticated %}
+        <p>Please Login For comment</p>
+        {% else %}
+        <div class="input-group mb-3">
+            <form action="/blog/postcomment/" method="post">
+                {% csrf_token %}
+                <input type="text" class="form-control" placeholder="Comment" aria-label="Recipient's username"
+                    aria-describedby="button-addon2" id="comment" name="comment">
+                <input type="hidden" name="postid" value="{{post.pno}}">
+                <input type="hidden" name="parentsno" value="">
+
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Comment</button>
+            </form>
+        </div>
+        {% endif %}
+        {% for comment in comments%}
+        <div class="card w-75">
+            <div class="card-body">
+                <h5 class="card-title">{{comment.user}} at {{comment.timestamp | naturalday}}</h5>
+                <p class="card-text">{{comment.comment}}</p>
+
+                <button class="btn btn-primary" type="button" data-toggle="collapse"
+                    data-target="#replybox{{comment.sno}}" aria-expanded="false"
+                    aria-controls="replybox{{comment.sno}}">
+                    Reply
+                </button>
+                <div class="collapse my-2" id="replybox{{comment.sno}}">
+                    {% if not user.is_authenticated %}
+                    <p>Please Login For reply</p>
+                    {% else %}
+                    <div class="card card-body">
+                        <form action="/blog/postcomment/" method="post">
+                            {% csrf_token %}
+       
+                            <label>Reply a Post</label>
+                            <input type="text" class="form-control" placeholder="Reply"
+                                aria-label="Recipient's username" aria-describedby="button-addon2" id="comment"
+                                name="comment">
+                            <input type="hidden" name="parentsno" value="{{comment.sno}}">
+                            <input type="hidden" name="postid" value="{{post.pno}}">
+
+                            <button class="btn btn-primary" type="submit" id="button-addon2">Submit</button>
+                        </form>
+
+                    </div>
+                    {% endif%}
+                    <div class="card-body">
+
+                        {%for reply in replydict|get_val:comment.sno%}
+                        <h5 class="card-title">{{reply.user.username}} at {{reply.timestamp | naturalday}}</h5>
+                        <p class="card-text">{{reply.comment}}</p>
+                        
+                        {%endfor%}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {% endfor %}
+    </div>
+</div>
+
+{%endblock%}
